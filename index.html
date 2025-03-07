@@ -3,33 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload</title>
+    <title>Contact Form</title>
 </head>
 <body>
-    <h2>Upload File</h2>
-    <form id="uploadForm">
-        <input type="file" id="fileInput" required>
-        <button type="submit">Upload</button>
+    <h2>Contact Us</h2>
+    <form id="contactForm">
+        <input type="text" id="name" placeholder="Your Name" required>
+        <input type="email" id="email" placeholder="Your Email" required>
+        <textarea id="message" placeholder="Your Message" required></textarea>
+        <input type="file" id="file">
+        <button type="submit">Submit</button>
     </form>
-    <p id="message"></p>
+    <p id="responseMessage"></p>
 
-    <script>
-        document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+    <script> const API_URL = "https://contacts-1-2pnh.onrender.com/contact"; 
+
+        document.getElementById("contactForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const fileInput = document.getElementById("fileInput").files[0];
-            if (!fileInput) return alert("Please select a file.");
-
+        
             const formData = new FormData();
-            formData.append("file", fileInput);
-
-            const response = await fetch("http://localhost:3000/upload", {
+            formData.append("name", document.getElementById("name").value);
+            formData.append("email", document.getElementById("email").value);
+            formData.append("message", document.getElementById("message").value);
+            formData.append("file", document.getElementById("file").files[0]);
+        
+            const response = await fetch(API_URL, {
                 method: "POST",
                 body: formData
             });
-
+        
             const result = await response.json();
-            document.getElementById("message").textContent = result.message;
+            document.getElementById("responseMessage").textContent = result.message;
         });
-    </script>
+        </script>
 </body>
 </html>
