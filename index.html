@@ -3,38 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Form</title>
+    <title>Contact & Admin Panel</title>
 </head>
 <body>
-    <h2>Contact Us</h2>
-    <form id="contactForm">
-        <input type="text" id="name" placeholder="Your Name" required>
-        <input type="email" id="email" placeholder="Your Email" required>
-        <textarea id="message" placeholder="Your Message" required></textarea>
-        <input type="file" id="file">
-        <button type="submit">Submit</button>
-    </form>
-    <p id="responseMessage"></p>
 
-    <script> const API_URL = "https://contacts-1-2pnh.onrender.com/contact"; 
+    <h1>Welcome</h1>
 
-        document.getElementById("contactForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-        
-            const formData = new FormData();
-            formData.append("name", document.getElementById("name").value);
-            formData.append("email", document.getElementById("email").value);
-            formData.append("message", document.getElementById("message").value);
-            formData.append("file", document.getElementById("file").files[0]);
-        
-            const response = await fetch(API_URL, {
-                method: "POST",
-                body: formData
-            });
-        
-            const result = await response.json();
-            document.getElementById("responseMessage").textContent = result.message;
-        });
-        </script>
+    <button onclick="showContactForm()">Contact Us</button>
+    <button onclick="showAdminPanel()">Admin Panel</button>
+
+    <!-- Contact Form -->
+    <div id="contactFormSection">
+        <h2>Contact Us</h2>
+        <form id="contactForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="email" id="email" placeholder="Your Email" required>
+            <textarea id="message" placeholder="Your Message" required></textarea>
+            <input type="file" id="file">
+            <button type="submit">Submit</button>
+        </form>
+        <p id="responseMessage"></p>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanelSection" style="display: none;">
+        <h2>Contact Submissions</h2>
+        <ul id="contactsList"></ul>
+    </div>
+
+    <script > 
+
+        const API_URL = "https://contacts-1-2pnh.onrender.com"; 
+
+// Show Contact Form
+function showContactForm() {
+    document.getElementById("contactFormSection").style.display = "block";
+    document.getElementById("adminPanelSection").style.display = "none";
+}
+
+// Show Admin Panel
+function showAdminPanel() {
+    document.getElementById("contactFormSection").style.display = "none";
+    document.getElementById("adminPanelSection").style.display = "block";
+    loadAdminPanel();
+}
+
+// Handle Contact Form Submission
+document.getElementById("contactForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", document.getElementById("name").value);
+    formData.append("email", document.getElementById("email").value);
+    formData.append("message", document.getElementById("message").value);
+    formData.append("file", document.getElementById("file").files[0]);
+
+    const response = await fetch(`${API_URL}/contact`, {
+        method: "POST",
+        body: formData
+    });
+
+    const result = await response.json();
+    document.getElementById("responseMessage").textContent = result.message;
+});
+
+// Load Admin Panel
+async function loadAdminPanel() {
+    const response = await fetch(`${API_URL}/admin/contacts`);
+    const data = await response.json();
+
+    const list = document.getElementById("contactsList");
+    list.innerHTML = "";
+    data.forEach(contact => {
+        const item = document.createElement("li");
+        item.textContent = `${contact.name} (${contact.email}): ${contact.message}`;
+        list.appendChild(item);
+    });
+}
+
+    </script>
+
 </body>
 </html>
