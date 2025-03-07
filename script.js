@@ -1,19 +1,26 @@
-const API_URL = "https://contacts-1-2pnh.onrender.com/upload"; // Your backend URL on Render
+const API_URL = "https://contacts-2-1no4.onrender.com"; 
 
-document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+function showContactForm() {
+    document.getElementById("contactFormSection").classList.remove("hidden");
+    document.getElementById("adminPanelSection").classList.add("hidden");
+}
+
+function showAdminPanel() {
+    document.getElementById("contactFormSection").classList.add("hidden");
+    document.getElementById("adminPanelSection").classList.remove("hidden");
+    loadAdminPanel();
+}
+
+document.getElementById("contactForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    const fileInput = document.getElementById("fileInput").files[0];
-    if (!fileInput) return alert("Please select a file.");
-
-    const formData = new FormData();
-    formData.append("file", fileInput);
-
-    const response = await fetch(API_URL, {
-        method: "POST",
-        body: formData
-    });
-
+    const formData = new FormData(e.target);
+    const response = await fetch(`${API_URL}/contact`, { method: "POST", body: formData });
     const result = await response.json();
-    document.getElementById("message").textContent = result.message;
+    document.getElementById("responseMessage").textContent = result.message;
 });
+
+async function loadAdminPanel() {
+    const response = await fetch(`${API_URL}/admin/contacts`);
+    const data = await response.json();
+    document.getElementById("contactsList").innerHTML = data.map(contact => `<li>${contact.name} (${contact.email}): ${contact.message}</li>`).join('');
+}
