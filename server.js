@@ -20,6 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ Serve static files (Frontend)
 app.use(express.static("public"));
 
+// ✅ Serve index.html for the root route `/`
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 // ✅ Set up Multer for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
